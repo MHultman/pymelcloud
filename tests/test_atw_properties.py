@@ -1,5 +1,7 @@
 """Ecodan tests."""
+
 import pytest
+
 from pymelcloud import DEVICE_TYPE_ATW
 from pymelcloud.atw_device import (
     OPERATION_MODE_AUTO,
@@ -17,6 +19,7 @@ from pymelcloud.atw_device import (
     ZONE_STATUS_UNKNOWN,
     AtwDevice,
 )
+
 from .util import build_device
 
 

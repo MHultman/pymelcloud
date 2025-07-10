@@ -1,37 +1,39 @@
 """ATA tests."""
+
 import json
 import os
+from unittest.mock import AsyncMock, Mock, patch
 
 import pytest
-from asynctest import CoroutineMock, Mock, patch
 from aiohttp.web import HTTPForbidden
+
 from pymelcloud import DEVICE_TYPE_ATA
-from pymelcloud.const import ACCESS_LEVEL
 from pymelcloud.ata_device import (
-    OPERATION_MODE_HEAT,
-    OPERATION_MODE_DRY,
-    OPERATION_MODE_COOL,
-    OPERATION_MODE_FAN_ONLY,
-    OPERATION_MODE_HEAT_COOL,
-    V_VANE_POSITION_AUTO,
-    V_VANE_POSITION_1,
-    V_VANE_POSITION_2,
-    V_VANE_POSITION_3,
-    V_VANE_POSITION_4,
-    V_VANE_POSITION_5,
-    V_VANE_POSITION_SWING,
-    V_VANE_POSITION_UNDEFINED,
-    H_VANE_POSITION_AUTO,
     H_VANE_POSITION_1,
     H_VANE_POSITION_2,
     H_VANE_POSITION_3,
     H_VANE_POSITION_4,
     H_VANE_POSITION_5,
+    H_VANE_POSITION_AUTO,
     H_VANE_POSITION_SPLIT,
     H_VANE_POSITION_SWING,
     H_VANE_POSITION_UNDEFINED,
+    OPERATION_MODE_COOL,
+    OPERATION_MODE_DRY,
+    OPERATION_MODE_FAN_ONLY,
+    OPERATION_MODE_HEAT,
+    OPERATION_MODE_HEAT_COOL,
+    V_VANE_POSITION_1,
+    V_VANE_POSITION_2,
+    V_VANE_POSITION_3,
+    V_VANE_POSITION_4,
+    V_VANE_POSITION_5,
+    V_VANE_POSITION_AUTO,
+    V_VANE_POSITION_SWING,
+    V_VANE_POSITION_UNDEFINED,
     AtaDevice,
 )
+from pymelcloud.const import ACCESS_LEVEL
 
 
 def _build_device(device_conf_name: str, device_state_name: str) -> AtaDevice:
@@ -43,11 +45,11 @@ def _build_device(device_conf_name: str, device_state_name: str) -> AtaDevice:
         device_state = json.load(json_file)
 
     with patch("pymelcloud.client.Client") as _client:
-        _client.update_confs = CoroutineMock()
+        _client.update_confs = AsyncMock()
         _client.device_confs.__iter__ = Mock(return_value=[device_conf].__iter__())
-        _client.fetch_device_units = CoroutineMock(return_value=[])
-        _client.fetch_device_state = CoroutineMock(return_value=device_state)
-        _client.fetch_energy_report = CoroutineMock(return_value=None)
+        _client.fetch_device_units = AsyncMock(return_value=[])
+        _client.fetch_device_state = AsyncMock(return_value=device_state)
+        _client.fetch_energy_report = AsyncMock(return_value=None)
         client = _client
 
     return AtaDevice(device_conf, client)
@@ -95,7 +97,7 @@ async def test_ata():
 @pytest.mark.asyncio
 async def test_ata_guest():
     device = _build_device("ata_guest_listdevices.json", "ata_guest_get.json")
-    device._client.fetch_device_units = CoroutineMock(side_effect=HTTPForbidden)
+    device._client.fetch_device_units = AsyncMock(side_effect=HTTPForbidden)
     assert device.device_type == DEVICE_TYPE_ATA
     assert device.access_level == ACCESS_LEVEL["GUEST"]
     await device.update()

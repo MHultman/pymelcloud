@@ -1,4 +1,5 @@
 """MELCloud client library."""
+
 from datetime import timedelta
 from typing import Dict, List, Optional
 
@@ -6,21 +7,27 @@ from aiohttp import ClientSession
 
 from pymelcloud.ata_device import AtaDevice
 from pymelcloud.atw_device import AtwDevice
-from pymelcloud.erv_device import ErvDevice
 from pymelcloud.client import Client as _Client
 from pymelcloud.client import login as _login
 from pymelcloud.const import DEVICE_TYPE_ATA, DEVICE_TYPE_ATW, DEVICE_TYPE_ERV
 from pymelcloud.device import Device
+from pymelcloud.erv_device import ErvDevice
 
 
 async def login(
-    email: str, password: str, session: Optional[ClientSession] = None,
+    email: str,
+    password: str,
+    session: Optional[ClientSession] = None,
 ) -> str:
     """Log in to MELCloud with given credentials.
 
     Returns access token.
     """
-    _client = await _login(email, password, session,)
+    _client = await _login(
+        email,
+        password,
+        session,
+    )
     return _client.token
 
 
